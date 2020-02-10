@@ -6,7 +6,7 @@
 /*   By: fnaciri- <fnaciri-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 17:22:55 by fnaciri-          #+#    #+#             */
-/*   Updated: 2020/02/08 14:14:05 by fnaciri-         ###   ########.fr       */
+/*   Updated: 2020/02/10 18:48:22 by fnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ typedef struct s_rays{
 int     initialize_window();
 int     destroy_window();
 void    setup();
-int     key_down(int key, void *param);
-int     key_up(int key, void *param);
+int     key_down(int key);
+int     key_up(int key);
 void    process_input();
 int     is_wall_at(int x, int y);
 void    move_player();
@@ -87,6 +87,6 @@ void    render_player();
 void    render_rays();
 void    render_map();
 void    render();
-int     main_loop(void *param);
+int     main_loop();
 
 #endif

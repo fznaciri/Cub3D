@@ -6,7 +6,7 @@
 /*   By: fnaciri- <fnaciri-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 17:20:02 by fnaciri-          #+#    #+#             */
-/*   Updated: 2020/02/10 12:57:10 by fnaciri-         ###   ########.fr       */
+/*   Updated: 2020/02/10 18:50:09 by fnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void            my_mlx_pixel_put(t_data *data, int x, int y, int color)
     char    *dst;
 
     dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-    *(unsigned int*)dst = color;
+    *((unsigned int*)dst) = color;
 }
 
 int destroy_window()
@@ -84,12 +84,12 @@ void setup()
     g_player.height = 2;
     g_player.turn_direction = 0;
     g_player.walk_direction = 0;
-    g_player.rotation_angle = M_PI / 4;
-    g_player.player_speed = 20;
+    g_player.rotation_angle = M_PI / 6;
+    g_player.player_speed = 8;
     g_player.rotation_speed = 10 * (M_PI / 180);
 }
 
-int key_down(int key, void *param)
+int key_down(int key)
 {
     if (key == 53)
     {
@@ -117,7 +117,7 @@ int key_down(int key, void *param)
     return 0;
 }
 
-int key_up(int key, void *param)
+int key_up(int key)
 {
     if (key == 123 || key == 124) // left
          g_player.turn_direction = 0;
@@ -409,9 +409,18 @@ void render_3dwall()
     while(i < NUM_RAYS)
     {
         correct_distance = g_rays[i].distance * cos(g_rays[i].ray_angle - g_player.rotation_angle);
-        wall_height = (TILE_SIZE / correct_distance) * ((WIN_WIDTH / 2) / tan(FOV_ANGLE / 2));
-        rect(i * WALL_WIDTH, ((WIN_HEIGHT / 2) - (wall_height / 2)), WALL_WIDTH, wall_height, 0xFFFFFF);
-        i++;
+        wall_height = (TILE_SIZE / correct_distance) * ((WIN_WIDTH / 2) / (tan(FOV_ANGLE / 2)));
+        int wall_top = ((WIN_HEIGHT / 2) - (wall_height / 2));
+        wall_top = wall_top < 0 ? 0 : wall_top;
+        int wall_bot = ((WIN_HEIGHT / 2) + (wall_height / 2));
+        wall_bot = wall_bot > WIN_HEIGHT ? WIN_HEIGHT : wall_bot; 
+       int j = wall_top;
+       while(j < wall_bot)
+       {
+           my_mlx_pixel_put(&img, i, j, 0xFFFFFF);
+           j++;
+       }
+       i++;
     }
 }
 
@@ -431,7 +440,6 @@ void clear_image()
 int main_loop()
 {
     update(); 
-   
     render();
     mlx_put_image_to_window(mlx_ptr, win_ptr, img.img, 0, 0);
     clear_image();
