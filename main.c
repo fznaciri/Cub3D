@@ -6,29 +6,19 @@
 /*   By: fnaciri- <fnaciri-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 17:20:02 by fnaciri-          #+#    #+#             */
-/*   Updated: 2020/02/10 18:50:09 by fnaciri-         ###   ########.fr       */
+/*   Updated: 2020/03/05 19:35:55 by fnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cub3D.h"
 
-void *mlx_ptr;
 
-void *win_ptr;
-
-t_data  img;
-
-int isgamerunning = FALSE;
-
-t_player g_player;
-
-t_rays  g_rays[NUM_RAYS];
 
 int     map[14][29] = {
         {1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1},
         {1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1},
         {1 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
-        {1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
+        {1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
         {1 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
         {1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,1 ,1 ,1 ,1 ,0 ,0 ,0 ,1},
         {1 ,1 ,1 ,1 ,0 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
@@ -84,9 +74,9 @@ void setup()
     g_player.height = 2;
     g_player.turn_direction = 0;
     g_player.walk_direction = 0;
-    g_player.rotation_angle = M_PI / 6;
+    g_player.rotation_angle = M_PI / 10;
     g_player.player_speed = 8;
-    g_player.rotation_speed = 10 * (M_PI / 180);
+    g_player.rotation_speed = 8 * (M_PI / 180);
 }
 
 int key_down(int key)
@@ -96,38 +86,38 @@ int key_down(int key)
         isgamerunning = FALSE;
         destroy_window();
     }
-    if (key == 123) // left
+    if (key == 123 || key == 0) // left
          g_player.turn_direction = -1;
-    if (key == 124) // right
+    if (key == 124 || key == 2) // right
          g_player.turn_direction = 1;
-    if (key == 13) // up w
+    if (key == 13 || key == 126) // up w 
          g_player.walk_direction = 1;
-    if (key == 1) // down s
+    if (key == 1 || key == 125) // down s
          g_player.walk_direction = -1;
-    if (key == 0) // turn left and walk a
-    {
-         g_player.walk_direction = 1;
-         g_player.turn_direction = -1;
-    }  
-    if (key == 2) // turn right and walk d
-    {
-         g_player.walk_direction = 1;
-         g_player.turn_direction = 1;
-    }
+    // if (key == 0) // turn left and walk a
+    // {
+    //      g_player.walk_direction = 1;
+    //      g_player.turn_direction = -1;
+    // }  
+    // if (key == 2) // turn right and walk d
+    // {
+    //      g_player.walk_direction = 1;
+    //      g_player.turn_direction = 1;
+    // }
     return 0;
 }
 
 int key_up(int key)
 {
-    if (key == 123 || key == 124) // left
+    if (key == 123 || key == 124 || key == 0 || key == 2) // turn
          g_player.turn_direction = 0;
-    if (key == 13 || key == 1) // up w
+    if (key == 13 || key == 1 || key == 126 || key == 125) // up w
          g_player.walk_direction = 0;
-    if (key == 0 || key == 2) // turn left and walk a
-    {
-         g_player.walk_direction = 0;
-         g_player.turn_direction = 0;
-    }  
+    // if (key == 0 || key == 2) // turn left and walk a
+    // {
+    //      g_player.walk_direction = 0;
+    //      g_player.turn_direction = 0;
+    // }  
     return 0;
 }
 
@@ -153,13 +143,13 @@ int     is_wall_at(int x, int y)
 void move_player()
 {
     float move_step;
-    int new_playerx;
-    int new_playery;
+    float new_playerx;
+    float new_playery;
     
     move_step = g_player.walk_direction * g_player.player_speed;
     g_player.rotation_angle += g_player.turn_direction * g_player.rotation_speed;
-    new_playerx = floor(g_player.x + move_step * cos(g_player.rotation_angle));
-    new_playery = floor(g_player.y + move_step * sin(g_player.rotation_angle)); 
+    new_playerx = (g_player.x + move_step * cos(g_player.rotation_angle));
+    new_playery = (g_player.y + move_step * sin(g_player.rotation_angle)); 
     if (!is_wall_at(new_playerx, new_playery))
     {
         g_player.x = new_playerx;
@@ -364,7 +354,7 @@ void    line(int x, int y, float alpha, int d, int color)
 void render_player()
 {
     rect(MINI_MAP_SCALE * g_player.x, MINI_MAP_SCALE * g_player.y, MINI_MAP_SCALE * g_player.width, MINI_MAP_SCALE * g_player.height, 0x00FF00);
-    line(MINI_MAP_SCALE * (g_player.x + (g_player.width / 2)), MINI_MAP_SCALE * (g_player.y + (g_player.height / 2)), g_player.rotation_angle, MINI_MAP_SCALE * 10, 0x00FF00);
+    line(MINI_MAP_SCALE * (g_player.x + (g_player.width / 2)), MINI_MAP_SCALE * (g_player.y + (g_player.height / 2)), g_player.rotation_angle, MINI_MAP_SCALE * 50, 0x00FF00);
 }
 
 void render_rays()
@@ -400,24 +390,195 @@ void render_map()
     }
 }
 
+int  get_text_color(t_text text, int x, int y)
+{
+    if (x >= 0 && x < text.width && y >= 0 && y < text.height)
+    {
+        return(*((unsigned int*)text.addr + (y * text.width + x)));
+    }
+    return 0;
+}
+
+void load_texture(t_text *text)
+{
+    text->text = mlx_xpm_file_to_image(mlx_ptr, text->path, &text->width, &text->height);
+    text->addr = mlx_get_data_addr(text->text, &text->bits_per_pixel, &text->line_length, &text->endian);
+}
+
+void set_text()  
+{
+    int i = 0;
+    path.no = "./texture/7.xpm";
+    path.so = "./texture/23.xpm";
+    path.we = "./texture/eagle.xpm";
+    path.es = "./texture/nazi.xpm";
+    path.s  = "./texture/barrel.xpm"; 
+
+    while (i < 5)
+    {
+        text[i].width = 64;
+        text[i].height = 64;
+        i++;
+    }
+    text[NORTH].path = path.no;
+    text[SOUTH].path = path.so;
+    text[WEST].path = path.we;
+    text[EAST].path = path.es;
+    text[SPRITE].path = path.s;
+
+
+    load_texture(&text[NORTH]);
+    load_texture(&text[SOUTH]);
+    load_texture(&text[WEST]);
+    load_texture(&text[EAST]);
+    load_texture(&text[SPRITE]);
+}
+
+
+int texture(int i)
+{
+    // if(!g_rays[i].vertical_hit && g_rays[i].facing_up)
+    //     return NORTH;
+    // else if (!g_rays[i].vertical_hit && g_rays[i].facing_down)
+    //     return SOUTH;
+    // if (g_rays[i].vertical_hit && g_rays[i].facing_right)
+    //     return WEST;
+    // else if (g_rays[i].vertical_hit && g_rays[i].facing_left) 
+    //     return EAST;
+    if(!is_wall_at(g_rays[i].wall_hitx, g_rays[i].wall_hity - 1))
+        return NORTH;
+    else if (!is_wall_at(g_rays[i].wall_hitx, g_rays[i].wall_hity + 1))
+        return SOUTH;
+    if (!is_wall_at(g_rays[i].wall_hitx - 1, g_rays[i].wall_hity))
+        return WEST;
+    else if (!is_wall_at(g_rays[i].wall_hitx + 1, g_rays[i].wall_hity))
+        return EAST;
+    return 0;
+}
+
+// void    set_text()
+// {
+//     text.path = "./texture/wall_1.xpm";
+//     text.width = 64;
+//     text.height = 64;
+// }
+
+// void set_sp()
+// {
+//     int i;
+//     int j;
+   
+//     i = 0;
+//     while(i < MAP_ROWS)
+//     {
+//         j = 0;
+//         while(j < MAP_COL)
+//         {   
+//             if(map[j][i] == 2)
+//             {
+//                 text[SPRITE].offset_x = j * TILE_SIZE  +  TILE_SIZE / 2;
+//                 text[SPRITE].offset_y = i * TILE_SIZE + TILE_SIZE / 2;
+//             }
+//             j++;
+//         }
+//         i++;
+//     }
+// }
+
+// void render_sprite()
+// {
+//     int size;
+//     float d;
+//     int sp_ystart;
+//    // int sp_yend;
+//     int sp_xstart;
+//     //int sp_xend;
+//     float angle;
+//     unsigned int color;
+//     int i;
+//     int j;
+
+//     set_sp();
+//     d = distance(g_player.x, g_player.y, text[SPRITE].offset_x, text[SPRITE].offset_y);
+//     angle = atan2(text[SPRITE].offset_y - g_player.y, text[SPRITE].offset_x - g_player.x); // angle between the player and the sprite
+//     while (angle - g_player.rotation_angle > M_PI)
+//         angle -= 2 * M_PI;
+//     while (angle - g_player.rotation_angle < -M_PI)
+//         angle += 2 * M_PI;
+//     if (WIN_WIDTH < WIN_HEIGHT)
+//         size = (WIN_HEIGHT / d) *  TILE_SIZE;
+//     else
+//         size = (WIN_WIDTH / d) *TILE_SIZE;
+    
+//     sp_ystart = (WIN_HEIGHT / 2) - (size / 2);
+//     sp_ystart = sp_ystart < 0 ? 0 : sp_ystart;
+//     //sp_yend = (WIN_HEIGHT / 2) + (size / 2);
+//     //sp_yend = sp_yend > WIN_HEIGHT ? WIN_HEIGHT - 1 : sp_yend;
+//     sp_xstart = (angle - g_player.rotation_angle)  * (WIN_WIDTH / FOV_ANGLE) + (WIN_WIDTH / 2 - size / 2);
+//     sp_xstart = sp_xstart < 0 ? 0 : sp_xstart;
+//     //sp_xend = (angle - g_player.rotation_angle)  * (WIN_WIDTH / FOV_ANGLE) + (WIN_WIDTH / 2 + size / 2);
+//     //sp_xend = sp_xend > WIN_WIDTH ? WIN_WIDTH - 1 : sp_xend;
+
+//     i = 0;
+//     while(i < size)
+//     {   
+//         j = 0;
+//         while(j < size)
+//         {
+//             color = get_text_color(text[SPRITE], i * text[SPRITE].width / size , j * (text[SPRITE].height/ size));
+//             my_mlx_pixel_put(&img, sp_xstart + i, sp_ystart + j, color);
+//             j++;
+//         }
+//         i++;
+//     }
+
+// }
+
 void render_3dwall()
 {
     int i = 0;
     int wall_height;
     float correct_distance;
+    unsigned int color;
+    int distance_from_top;
+    int j;
+    int wall_top;
+    int wall_bot;
+    int t;
     
+    set_text();
+    //load_texture();
     while(i < NUM_RAYS)
     {
         correct_distance = g_rays[i].distance * cos(g_rays[i].ray_angle - g_player.rotation_angle);
         wall_height = (TILE_SIZE / correct_distance) * ((WIN_WIDTH / 2) / (tan(FOV_ANGLE / 2)));
-        int wall_top = ((WIN_HEIGHT / 2) - (wall_height / 2));
+        wall_top = ((WIN_HEIGHT / 2) - (wall_height / 2));
         wall_top = wall_top < 0 ? 0 : wall_top;
-        int wall_bot = ((WIN_HEIGHT / 2) + (wall_height / 2));
+        wall_bot = ((WIN_HEIGHT / 2) + (wall_height / 2));
         wall_bot = wall_bot > WIN_HEIGHT ? WIN_HEIGHT : wall_bot; 
-       int j = wall_top;
-       while(j < wall_bot)
+       j = 0;
+       t = texture(i);
+       if (g_rays[i].vertical_hit)
+           text[t].offset_x = (int)g_rays[i].wall_hity % TILE_SIZE;
+       else
+           text[t].offset_x = (int)g_rays[i].wall_hitx % TILE_SIZE;
+        text[t].offset_x = text[t].offset_x < 0 ? 0 : text[t].offset_x;
+       
+        while(j < WIN_HEIGHT)
        {
-           my_mlx_pixel_put(&img, i, j, 0xFFFFFF);
+            if (j < wall_top) // ceiling
+                color = 0xCCFFFF;
+            else if (j < wall_bot) // wall 
+            {
+                distance_from_top = j + (wall_height / 2) - (WIN_HEIGHT / 2);
+                
+                text[t].offset_y = distance_from_top * ((float)text[t].height / wall_height);
+                text[t].offset_y = text[t].offset_y >= WIN_HEIGHT ? WIN_HEIGHT - 1 : text[t].offset_y;
+                color = get_text_color(text[t], text[t].offset_x, text[t].offset_y);
+            } 
+            else if (j < WIN_HEIGHT) // floor
+                color = 0x336600;
+           my_mlx_pixel_put(&img, i, j, color);
            j++;
        }
        i++;
@@ -430,6 +591,7 @@ void render()
     render_map();
     render_rays();
     render_player();
+   // render_sprite();
 }
 
 void clear_image()

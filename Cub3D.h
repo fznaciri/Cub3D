@@ -6,7 +6,7 @@
 /*   By: fnaciri- <fnaciri-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 17:22:55 by fnaciri-          #+#    #+#             */
-/*   Updated: 2020/02/10 18:48:22 by fnaciri-         ###   ########.fr       */
+/*   Updated: 2020/03/04 12:38:50 by fnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,13 @@
 # define EVENT_KEYUP 3
 # define EVENT_EXIT 17
 # define MAX_INT 2147483647
+# define TEXTURES		5
+# define NORTH			0
+# define SOUTH			1
+# define WEST			2
+# define EAST			3
+# define SPRITE         4
+
 
 typedef struct  s_data {
     void        *img;
@@ -42,6 +49,42 @@ typedef struct  s_data {
     int         endian;
 }               t_data;
 
+typedef struct s_path {
+    char    *no;
+    char    *so;
+    char    *we;
+    char    *es;
+    char    *s;
+}               t_path;
+
+typedef struct  s_text {
+    void    *text;
+    char    *addr;
+    char    *path;
+    int     line_length;
+    int     bits_per_pixel;
+    int     width;
+    int     height;
+    int     endian; 
+    float   offset_x;
+    float   offset_y;
+}               t_text;
+
+// typedef struct s_sprite
+// {
+//     // void    *sp;;
+//     // char    *addr;
+//     // char    *path;
+//     // int     line_length;
+//     // int     bits_per_pixel;
+//     // int     width;
+//     // int     height;
+//     // int     endian; 
+//     int     id;
+//     float   x;
+//     float   y;
+//     float   distance;
+// }               t_sprite;
 
 typedef struct s_player{
     float     x;
@@ -68,6 +111,23 @@ typedef struct s_rays{
     int     facing_left;
 }               t_rays;
 
+
+void *mlx_ptr;
+
+void *win_ptr;
+
+t_data  img;
+
+t_text text[TEXTURES];
+
+t_path path;
+
+int isgamerunning = FALSE;
+
+t_player g_player;
+
+t_rays  g_rays[NUM_RAYS];
+
 int     initialize_window();
 int     destroy_window();
 void    setup();
@@ -86,7 +146,13 @@ void    line(int x, int y, float alpha, int d, int color);
 void    render_player();
 void    render_rays();
 void    render_map();
+int     get_text_color(t_text text, int x, int y);
+void    load_texture(t_text *text);
+void    set_text();
+int     texture(int i);
+void    render_3dwall();
 void    render();
+void    clear_image();
 int     main_loop();
 
 #endif
