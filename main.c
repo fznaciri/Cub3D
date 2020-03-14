@@ -6,7 +6,7 @@
 /*   By: fnaciri- <fnaciri-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 17:20:02 by fnaciri-          #+#    #+#             */
-/*   Updated: 2020/03/05 19:35:55 by fnaciri-         ###   ########.fr       */
+/*   Updated: 2020/03/12 18:02:55 by fnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 int     map[14][29] = {
         {1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1},
         {1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1},
-        {1 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
-        {1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
+        {1 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,2 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
+        {1 ,0 ,0 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
         {1 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
         {1 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,1 ,1 ,1 ,0 ,1 ,1 ,1 ,1 ,0 ,0 ,0 ,1},
         {1 ,1 ,1 ,1 ,0 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,0 ,1 ,1 ,1 ,0 ,0 ,0 ,0 ,0 ,0 ,1 ,0 ,0 ,0 ,1},
@@ -68,13 +68,13 @@ int destroy_window()
 
 void setup()
 {
-    g_player.x = WIN_WIDTH / 2;
-    g_player.y = WIN_HEIGHT / 2;
+    g_player.x = 1125; //WIN_WIDTH / 2;
+    g_player.y = 192; //WIN_HEIGHT / 2;
     g_player.width = 2;
     g_player.height = 2;
     g_player.turn_direction = 0;
     g_player.walk_direction = 0;
-    g_player.rotation_angle = M_PI / 10;
+    g_player.rotation_angle = M_PI;
     g_player.player_speed = 8;
     g_player.rotation_speed = 8 * (M_PI / 180);
 }
@@ -381,8 +381,10 @@ void render_map()
         {
             if (map[i][j] == 1)
                 color = 0;
-            else
+            else if (map[i][j] == 0)
                 color = 0xFFFFFF;
+            else if (map[i][j] == 2)
+                color = 0x00ff00;
             rect(MINI_MAP_SCALE * j * TILE_SIZE, MINI_MAP_SCALE * i * TILE_SIZE, MINI_MAP_SCALE * TILE_SIZE, MINI_MAP_SCALE * TILE_SIZE, color);
             j++;
         }
@@ -405,16 +407,21 @@ void load_texture(t_text *text)
     text->addr = mlx_get_data_addr(text->text, &text->bits_per_pixel, &text->line_length, &text->endian);
 }
 
-void set_text()  
+void set_path()
 {
-    int i = 0;
     path.no = "./texture/7.xpm";
     path.so = "./texture/23.xpm";
     path.we = "./texture/eagle.xpm";
     path.es = "./texture/nazi.xpm";
-    path.s  = "./texture/barrel.xpm"; 
+    
+}
 
-    while (i < 5)
+void set_text()  
+{
+    int i = 0;
+    
+    set_path();
+    while (i < 4)
     {
         text[i].width = 64;
         text[i].height = 64;
@@ -424,14 +431,14 @@ void set_text()
     text[SOUTH].path = path.so;
     text[WEST].path = path.we;
     text[EAST].path = path.es;
-    text[SPRITE].path = path.s;
+    //text[SPRITE].path = path.s;
 
 
     load_texture(&text[NORTH]);
     load_texture(&text[SOUTH]);
     load_texture(&text[WEST]);
     load_texture(&text[EAST]);
-    load_texture(&text[SPRITE]);
+   // load_texture(&text[SPRITE]);
 }
 
 
@@ -456,83 +463,95 @@ int texture(int i)
     return 0;
 }
 
-// void    set_text()
-// {
-//     text.path = "./texture/wall_1.xpm";
-//     text.width = 64;
-//     text.height = 64;
-// }
+void init_sprite(int *ws, int *hs)
+{
+    int a;
+    path.s  = "./texture/barrel.xpm"; 
+    sp.sp = mlx_xpm_file_to_image(mlx_ptr, path.s, ws, hs);
+    sp.addr = mlx_get_data_addr(sp.sp, &a, &a, &a);
+}
 
-// void set_sp()
-// {
-//     int i;
-//     int j;
+void set_sp()
+{
+    int i;
+    int j;
    
-//     i = 0;
-//     while(i < MAP_ROWS)
-//     {
-//         j = 0;
-//         while(j < MAP_COL)
-//         {   
-//             if(map[j][i] == 2)
-//             {
-//                 text[SPRITE].offset_x = j * TILE_SIZE  +  TILE_SIZE / 2;
-//                 text[SPRITE].offset_y = i * TILE_SIZE + TILE_SIZE / 2;
-//             }
-//             j++;
-//         }
-//         i++;
-//     }
-// }
+    i = 0;
+    while(i < MAP_ROWS)
+    {
+        j = 0;
+        while(j < MAP_COL)
+        {   
+            if(map[j][i] == 2)
+            {
+                sp.x = j * TILE_SIZE + TILE_SIZE / 2; //get to the center of the sprite
+                sp.y = i * TILE_SIZE + TILE_SIZE / 2;
+            }
+            j++;
+        }
+        i++;
+    }
+}
 
-// void render_sprite()
-// {
-//     int size;
-//     float d;
-//     int sp_ystart;
-//    // int sp_yend;
-//     int sp_xstart;
-//     //int sp_xend;
-//     float angle;
-//     unsigned int color;
-//     int i;
-//     int j;
+void render_sprite()
+{
+    int size;
+    float d;
+    int sp_ystart;
+   // int sp_yend;
+    int sp_xstart;
+    //int sp_xend;
+    float angle;
+    unsigned int color;
+    int i;
+    int j;
+    int ws;
+    int hs;
 
-//     set_sp();
-//     d = distance(g_player.x, g_player.y, text[SPRITE].offset_x, text[SPRITE].offset_y);
-//     angle = atan2(text[SPRITE].offset_y - g_player.y, text[SPRITE].offset_x - g_player.x); // angle between the player and the sprite
-//     while (angle - g_player.rotation_angle > M_PI)
-//         angle -= 2 * M_PI;
-//     while (angle - g_player.rotation_angle < -M_PI)
-//         angle += 2 * M_PI;
-//     if (WIN_WIDTH < WIN_HEIGHT)
-//         size = (WIN_HEIGHT / d) *  TILE_SIZE;
-//     else
-//         size = (WIN_WIDTH / d) *TILE_SIZE;
+    i = -1;
+    init_sprite(&ws,&hs);
+    set_sp();
     
-//     sp_ystart = (WIN_HEIGHT / 2) - (size / 2);
-//     sp_ystart = sp_ystart < 0 ? 0 : sp_ystart;
-//     //sp_yend = (WIN_HEIGHT / 2) + (size / 2);
-//     //sp_yend = sp_yend > WIN_HEIGHT ? WIN_HEIGHT - 1 : sp_yend;
-//     sp_xstart = (angle - g_player.rotation_angle)  * (WIN_WIDTH / FOV_ANGLE) + (WIN_WIDTH / 2 - size / 2);
-//     sp_xstart = sp_xstart < 0 ? 0 : sp_xstart;
-//     //sp_xend = (angle - g_player.rotation_angle)  * (WIN_WIDTH / FOV_ANGLE) + (WIN_WIDTH / 2 + size / 2);
-//     //sp_xend = sp_xend > WIN_WIDTH ? WIN_WIDTH - 1 : sp_xend;
+    angle = atan2(sp.y - g_player.y, sp.x - g_player.x) - g_player.rotation_angle; // angle between the player and the sprite
+    while (angle > M_PI)
+        angle -= 2 * M_PI;
+    while (angle < -M_PI || angle < 0)
+        angle += 2 * M_PI;
+    // angle = normalize_angle(angle);
+    d = distance(g_player.x, g_player.y, sp.x, sp.y); 
+    if (WIN_WIDTH < WIN_HEIGHT)    
+        size = (WIN_HEIGHT / d) * TILE_SIZE;
+    else
+        size = (WIN_WIDTH / d) * TILE_SIZE;
+    
+    sp_ystart = (WIN_HEIGHT / 2) - (size / 2);
+    sp_ystart = sp_ystart < 0 ? 0 : sp_ystart;
+    //sp_yend = (WIN_HEIGHT / 2) + (size / 2);
+    //sp_yend = sp_yend > WIN_HEIGHT ? WIN_HEIGHT - 1 : sp_yend;
+    sp_xstart = angle * (WIN_WIDTH / FOV_ANGLE) + (WIN_WIDTH / 2 - size / 2); // left corner of the tile size
+    //sp_xstart = sp_xstart > WIN_WIDTH ? WIN_WIDTH - 1 : sp_xstart;
+    //sp_xend = (angle - g_player.rotation_angle)  * (WIN_WIDTH / FOV_ANGLE) + (WIN_WIDTH / 2 + size / 2);
+    //sp_xend = sp_xend > WIN_WIDTH ? WIN_WIDTH - 1 : sp_xend;
 
-//     i = 0;
-//     while(i < size)
-//     {   
-//         j = 0;
-//         while(j < size)
-//         {
-//             color = get_text_color(text[SPRITE], i * text[SPRITE].width / size , j * (text[SPRITE].height/ size));
-//             my_mlx_pixel_put(&img, sp_xstart + i, sp_ystart + j, color);
-//             j++;
-//         }
-//         i++;
-//     }
+    
+    while(++i < size)
+    {   
+        j = 0;
+        if (sp_xstart +  i < 0 || sp_xstart+ i > WIN_WIDTH)
+            continue;
+        // if (d <= g_rays[sp_xstart + i].distance) // hiden the sprite behind walls
+		// 	continue;
+        while(j < size)
+        {
+            color = *(unsigned int*)sp.addr + ((j * (hs / size)) * ws) + (i * (ws / size));
+            if (color != 0x0)
+                if (((sp_xstart + i) >= 0 && (sp_xstart + i) < WIN_WIDTH) && ((sp_ystart + j) >= 0 && (sp_ystart + j) < WIN_HEIGHT))
+                    my_mlx_pixel_put(&img, sp_xstart + i, sp_ystart + j, color);
+            j++;
+        }
+    }
 
-// }
+}
 
 void render_3dwall()
 {
@@ -591,7 +610,7 @@ void render()
     render_map();
     render_rays();
     render_player();
-   // render_sprite();
+    render_sprite();
 }
 
 void clear_image()

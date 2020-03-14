@@ -6,7 +6,7 @@
 /*   By: fnaciri- <fnaciri-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/28 17:22:55 by fnaciri-          #+#    #+#             */
-/*   Updated: 2020/03/04 12:38:50 by fnaciri-         ###   ########.fr       */
+/*   Updated: 2020/03/11 17:01:58 by fnaciri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,13 @@
 # define EVENT_KEYUP 3
 # define EVENT_EXIT 17
 # define MAX_INT 2147483647
-# define TEXTURES		5
+# define TEXTURES		4
 # define NORTH			0
 # define SOUTH			1
 # define WEST			2
 # define EAST			3
-# define SPRITE         4
+
+//# define SPRITE         4
 
 
 typedef struct  s_data {
@@ -70,21 +71,14 @@ typedef struct  s_text {
     float   offset_y;
 }               t_text;
 
-// typedef struct s_sprite
-// {
-//     // void    *sp;;
-//     // char    *addr;
-//     // char    *path;
-//     // int     line_length;
-//     // int     bits_per_pixel;
-//     // int     width;
-//     // int     height;
-//     // int     endian; 
-//     int     id;
-//     float   x;
-//     float   y;
-//     float   distance;
-// }               t_sprite;
+typedef struct s_sprite
+{
+    void    *sp;;
+    char    *addr;
+    float   x;
+    float   y;
+    float   distance;
+}               t_sprite;
 
 typedef struct s_player{
     float     x;
@@ -119,6 +113,8 @@ void *win_ptr;
 t_data  img;
 
 t_text text[TEXTURES];
+
+t_sprite sp;
 
 t_path path;
 
